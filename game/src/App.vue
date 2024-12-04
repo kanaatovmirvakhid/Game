@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import GameStatistics from './components/GameStatistics.vue';
+import GameRanges from './components/GameRanges.vue';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="game">
+    <header class="header">
+      <GameStatistics></GameStatistics>
+    </header>
+    <main class="main">
+      <GameRanges></GameRanges>
+    </main>
+    <footer class="footer">
+      <q-btn
+        size="22px"
+        class="q-px-xl q-py-xs"
+        color="secondary"
+        label="НАЧАТЬ"
+      />
+    </footer>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.game{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: center;
+  gap: 30px;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+header{
+   flex: 0 0 auto;
+   display: flex;
+   justify-content: center;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.main{
+   flex: 1 0 auto;
+}
+footer{
+   flex: 0 0 auto;
+   display: flex;
+   justify-content: center;
 }
 </style>
