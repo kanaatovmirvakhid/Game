@@ -1,106 +1,71 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Ref } from 'vue';
+import { defineProps, computed } from "vue";
+import type { IRow } from "../types/gameTypes";
 
-// Тип для описания одного параметра
-interface IParameter {
-  value: number;
-  name: string;
-}
+const props = defineProps<{
+  statistics: IRow[];
+}>();
 
-// Тип для одной колонки (группа параметров)
-interface IStatisticColumn {
-  GDP?: IParameter;
-  inflation?: IParameter;
-  unemployment?: IParameter;
-  deficitSurplus?: IParameter;
-  debtBurden?: IParameter;
-  happiness?: IParameter;
-  ecology?: IParameter;
-  poverty?: IParameter;
-  export?: IParameter;
-  priceIndex?: IParameter;
-}
-
-// Тип для строки статистики с двумя колонками
-interface IRow {
-  firstColumn: IStatisticColumn;
-  secondColumn: IStatisticColumn;
-}
-
-// Создание реактивного массива
-const statistics: Ref<IRow[]> = ref([
-  {
-    firstColumn: {
-      GDP: {
-        value: 100_000, // ВВП в миллиардах долларов
-        name: 'ВВП (млрд $)',
-      },
-      inflation: {
-        value: 2.5, // Инфляция в процентах
-        name: 'Инфляция (%)',
-      },
-      unemployment: {
-        value: 5.5, // Уровень безработицы в процентах
-        name: 'Безработица (%)',
-      },
-      deficitSurplus: {
-        value: -3, // Бюджетный дефицит/профицит в процентах от ВВП
-        name: 'Бюджетный дефицит/профицит (% ВВП)',
-      },
-      debtBurden: {
-        value: 60, // Долговая нагрузка в процентах от ВВП
-        name: 'Долговая нагрузка (% ВВП)',
-      },
-    },
-    secondColumn: {
-      happiness: {
-        value: 70, // Индекс счастья от 0 до 100
-        name: 'Индекс счастья',
-      },
-      ecology: {
-        value: 65, // Экологическое состояние от 0 до 100
-        name: 'Экологическое состояние',
-      },
-      poverty: {
-        value: 12, // Уровень бедности в процентах
-        name: 'Уровень бедности (%)',
-      },
-      export: {
-        value: 20_000, // Чистый экспорт в миллиардах долларов
-        name: 'Чистый экспорт (млрд $)',
-      },
-      priceIndex: {
-        value: 102, // Индекс потребительских цен (в процентах, базовый уровень 100)
-        name: 'Индекс потребительских цен',
-      },
-    },
-  },
-]);
-
-// Пример вычисляемого свойства
-const lastYear = computed(() => statistics.value.length - 1);
+const lastYear = computed(() => {
+  return props.statistics.length - 1;
+});
 </script>
 
 <template>
-    <div class="statistics">
-      <div class="statistics__column">
-        <div class="statistics__item" v-for="(item, index) in statistics[lastYear].firstColumn" v-bind:key="index">
-          <div class="statistics__name">{{ item?.name }}</div>
-          <div class="statistics__value">{{ item?.value }}</div>
+  <div class="statistics">
+    <div class="statistics__column">
+      <div
+        class="statistics__item"
+        v-for="(item, index) in statistics[lastYear].firstColumn"
+        :key="index"
+      >
+        <div class="statistics__name">{{ item?.name }}</div>
+        <div class="statistics__value"  v-if="
+              lastYear > 0 &&
+              Number(item?.value.toFixed(0)) > statistics[lastYear - 1]?.firstColumn[index]?.value
+            ">
+          <span class="increase">{{ item?.value.toFixed(3) }}</span> <img src="../assets/img/increase.png" alt="">
         </div>
-      </div>
-      <div class="statistics__column">
-        <div class="statistics__item" v-for="(item, index) in statistics[lastYear].secondColumn" v-bind:key="index">
-          <div class="statistics__name">{{ item?.name }}</div>
-          <div class="statistics__value">{{ item?.value }}</div>
+        <div class="statistics__value" v-else-if="
+              lastYear > 0 &&
+              Number(item?.value.toFixed(0)) < statistics[lastYear - 1]?.firstColumn[index]?.value
+            ">
+          <span class="decrease">{{ item?.value.toFixed(3) }}</span> <img src="../assets/img/decrease.png" alt="">
+        </div>
+        <div class="statistics__value" v-else>
+          <span >{{ item?.value.toFixed(3) }}</span>
         </div>
       </div>
     </div>
+    <div class="statistics__column">
+      <div
+        class="statistics__item"
+        v-for="(item, index) in statistics[lastYear].secondColumn"
+        :key="index"
+      >
+        <div class="statistics__name">{{ item?.name }}</div>
+        <div class="statistics__value"  v-if="
+              lastYear > 0 &&
+              Number(item?.value.toFixed(0)) > statistics[lastYear - 1]?.secondColumn[index]?.value
+            ">
+          <span class="increase">{{ item?.value.toFixed(3) }}</span> <img src="../assets/img/increase.png" alt="">
+        </div>
+        <div class="statistics__value" v-else-if="
+              lastYear > 0 &&
+              Number(item?.value.toFixed(0)) < statistics[lastYear - 1]?.secondColumn[index]?.value
+            ">
+          <span class="decrease">{{ item?.value.toFixed(3) }}</span> <img src="../assets/img/decrease.png" alt="">
+        </div>
+        <div class="statistics__value" v-else>
+          <span >{{ item?.value.toFixed(3) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.statistics{
+.statistics {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -110,18 +75,29 @@ const lastYear = computed(() => statistics.value.length - 1);
   border-top: 0;
   padding: 20px;
   border-radius: 0 0 10px 10px;
-  &__column{
-    width: 300px;
+  &__column {
+    width: 400px;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  &__item{
+  &__item {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
   }
+  &__value{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+.increase{
+  color: #21BA45;
+}
+.decrease{
+  color: #C10015;
 }
 </style>

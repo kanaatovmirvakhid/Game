@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import GameStatistics from './components/GameStatistics.vue';
 import GameRanges from './components/GameRanges.vue';
+
+import { useGameStore } from './stores/counter';
+const gameStore = useGameStore();
 </script>
 
 <template>
-  <div class="game">
+ <div class="game">
     <header class="header">
-      <GameStatistics></GameStatistics>
+      <GameStatistics :statistics="gameStore.statistics"></GameStatistics>
     </header>
     <main class="main">
-      <GameRanges></GameRanges>
+      <GameRanges :ranges="gameStore.ranges"></GameRanges>
     </main>
     <footer class="footer">
       <q-btn
@@ -17,6 +20,7 @@ import GameRanges from './components/GameRanges.vue';
         class="q-px-xl q-py-xs"
         color="secondary"
         label="НАЧАТЬ"
+        @click="gameStore.startGame"
       />
     </footer>
   </div>
